@@ -5,98 +5,555 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Janis Ringli</title>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* ─── Reset & base ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f0f0f;
+      --surface:   #1a1a1a;
+      --border:    #2a2a2a;
+      --text:      #f0f0f0;
+      --muted:     #888;
+      --accent:    #6c63ff;      /* developer accent – purple */
+      --accent-alt:#f59e0b;      /* photographer accent – amber */
+      --radius:    10px;
+      --transition: 0.35s ease;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #0f0f0f;
-      color: #f0f0f0;
+      background: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    .card {
+    /* ─── Sticky header ───────────────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(15,15,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ─── Mode toggle ─────────────────────────────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .mode-toggle span.active { color: var(--text); font-weight: 600; }
+
+    /* The actual switch */
+    .toggle-track {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      cursor: pointer;
+    }
+
+    .toggle-track input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      inset: 0;
+      border-radius: 28px;
+      background: var(--accent);
+      transition: background var(--transition);
+    }
+
+    .toggle-thumb::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform var(--transition);
+    }
+
+    .toggle-track input:checked + .toggle-thumb {
+      background: var(--accent-alt);
+    }
+
+    .toggle-track input:checked + .toggle-thumb::after {
+      transform: translateX(24px);
+    }
+
+    /* ─── View panels ─────────────────────────────────────────────────── */
+    .view {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .view.hidden { display: none; }
+
+    /* ─── Hero ────────────────────────────────────────────────────────── */
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
       text-align: center;
-      padding: 3rem 2rem;
-      max-width: 480px;
-      width: 100%;
     }
 
     .avatar {
-      width: 96px;
-      height: 96px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
-      background: #1e1e1e;
-      border: 2px solid #333;
+      background: var(--surface);
+      border: 2px solid var(--border);
       margin: 0 auto 1.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      user-select: none;
+      font-size: 2.8rem;
     }
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
       margin-bottom: 0.5rem;
     }
 
-    .tagline {
-      color: #888;
-      font-size: 1rem;
-      margin-bottom: 2rem;
+    .hero h1 span { color: var(--accent); }
+
+    .hero-photo h1 span { color: var(--accent-alt); }
+
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
     }
 
-    .links {
+    .hero .bio {
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      color: #bbb;
+      font-size: 0.95rem;
+    }
+
+    .btn-row {
       display: flex;
       gap: 0.75rem;
       justify-content: center;
       flex-wrap: wrap;
     }
 
-    .links a {
+    .btn {
       display: inline-block;
-      padding: 0.5rem 1.25rem;
-      border-radius: 6px;
-      background: #1e1e1e;
-      color: #f0f0f0;
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius);
       text-decoration: none;
       font-size: 0.9rem;
-      border: 1px solid #333;
-      transition: background 0.15s, border-color 0.15s;
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: opacity 0.15s, transform 0.15s;
+      cursor: pointer;
     }
 
-    .links a:hover {
-      background: #2a2a2a;
-      border-color: #555;
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-primary   { background: var(--accent);     color: #fff; }
+    .btn-secondary { background: var(--surface);    color: var(--text); border-color: var(--border); }
+    .btn-amber     { background: var(--accent-alt); color: #000; }
+
+    /* ─── Section layout ──────────────────────────────────────────────── */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
     }
 
-    footer {
-      margin-top: 3rem;
-      color: #444;
+    section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+      position: relative;
+      display: inline-block;
+    }
+
+    section h2::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .photo-section h2::after { background: var(--accent-alt); }
+
+    /* ─── Skills grid ─────────────────────────────────────────────────── */
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .skill-tag {
+      padding: 0.4rem 0.9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .skill-tag.accent { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── Project cards ───────────────────────────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .project-card h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+    .project-card p  { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
+
+    .tag-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: rgba(108,99,255,0.12);
+      color: var(--accent);
+      border-radius: 999px;
+    }
+
+    /* ─── Photo gallery ───────────────────────────────────────────────── */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .photo-slot {
+      aspect-ratio: 4/3;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .photo-slot:hover {
+      transform: scale(1.02);
+      border-color: var(--accent-alt);
+    }
+
+    /* Gradient placeholder art */
+    .photo-slot:nth-child(1)  { background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); }
+    .photo-slot:nth-child(2)  { background: linear-gradient(135deg,#2d1b69,#11998e,#38ef7d); }
+    .photo-slot:nth-child(3)  { background: linear-gradient(135deg,#fc4a1a,#f7b733); }
+    .photo-slot:nth-child(4)  { background: linear-gradient(135deg,#0f2027,#203a43,#2c5364); }
+    .photo-slot:nth-child(5)  { background: linear-gradient(135deg,#373b44,#4286f4); }
+    .photo-slot:nth-child(6)  { background: linear-gradient(135deg,#c94b4b,#4b134f); }
+    .photo-slot:nth-child(7)  { background: linear-gradient(135deg,#1e3c72,#2a5298); }
+    .photo-slot:nth-child(8)  { background: linear-gradient(135deg,#134e5e,#71b280); }
+    .photo-slot:nth-child(9)  { background: linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b); }
+
+    .photo-slot .photo-label {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.7);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    /* ─── Stats row (photographer) ────────────────────────────────────── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .stat-card .num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-alt);
+    }
+
+    .stat-card .label {
       font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ─── Divider ─────────────────────────────────────────────────────── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+    /* ─── Footer ──────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* ─── Responsive ──────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      header { padding: 0.75rem 1rem; }
+      section { padding: 2rem 1rem; }
+      .hero { padding: 3rem 1rem 2rem; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="avatar">👋</div>
-    <h1>Janis Ringli</h1>
-    <p class="tagline">Developer &amp; Creator</p>
-    <nav class="links">
-      <a href="https://github.com/janisringli" target="_blank" rel="noopener">GitHub</a>
-    </nav>
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header>
+    <div class="logo">Janis Ringli</div>
+    <label class="mode-toggle" title="Switch between Developer and Photographer view">
+      <span id="label-dev" class="active">Dev</span>
+      <span class="toggle-track">
+        <input type="checkbox" id="mode-switch" aria-label="Toggle between developer and photographer mode" />
+        <span class="toggle-thumb"></span>
+      </span>
+      <span id="label-photo">Photo</span>
+    </label>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!--  DEVELOPER VIEW                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="dev-view" class="view">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="avatar">💻</div>
+      <h1>Hi, I'm <span>Janis</span></h1>
+      <p class="subtitle">Full-Stack Developer &amp; Open-Source Enthusiast</p>
+      <p class="bio">
+        I build fast, accessible, and well-crafted software. Passionate about clean code,
+        great developer experience, and turning ideas into products people love.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="https://github.com/janisringli" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="mailto:hello@janisringli.com">Get in touch</a>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- Skills -->
+    <section>
+      <h2>Skills &amp; Tools</h2>
+      <div class="skills-grid">
+        <span class="skill-tag accent">JavaScript</span>
+        <span class="skill-tag accent">TypeScript</span>
+        <span class="skill-tag accent">React</span>
+        <span class="skill-tag accent">Node.js</span>
+        <span class="skill-tag">Next.js</span>
+        <span class="skill-tag">HTML &amp; CSS</span>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">Linux</span>
+        <span class="skill-tag">Figma</span>
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- Projects -->
+    <section>
+      <h2>Projects</h2>
+      <div class="projects-grid">
+
+        <div class="project-card">
+          <h3>Portfolio Site</h3>
+          <p>This very site &mdash; a minimal personal page with a developer / photographer toggle.</p>
+          <div class="tag-row">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JS</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <h3>Project Two</h3>
+          <p>A short description of another cool thing you built. Replace with your real project.</p>
+          <div class="tag-row">
+            <span class="tag">React</span>
+            <span class="tag">Node.js</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <h3>Project Three</h3>
+          <p>Another project &mdash; maybe an API, a CLI tool, or a mobile app. Your story here.</p>
+          <div class="tag-row">
+            <span class="tag">TypeScript</span>
+            <span class="tag">Docker</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </div>
+  <!-- /dev-view -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!--  PHOTOGRAPHER VIEW                                                -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="photo-view" class="view hidden">
+
+    <!-- Hero -->
+    <div class="hero hero-photo">
+      <div class="avatar">📷</div>
+      <h1>Hi, I'm <span>Janis</span></h1>
+      <p class="subtitle">Photographer &amp; Visual Storyteller</p>
+      <p class="bio">
+        I capture moments, landscapes, and stories through my lens.
+        Every frame is an invitation to see the world a little differently.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-amber" href="mailto:hello@janisringli.com">Book a session</a>
+        <a class="btn btn-secondary" href="https://instagram.com/janisringli" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- Stats -->
+    <section class="photo-section">
+      <h2>By the numbers</h2>
+      <div class="stats">
+        <div class="stat-card"><div class="num">3+</div><div class="label">Years shooting</div></div>
+        <div class="stat-card"><div class="num">500+</div><div class="label">Photos taken</div></div>
+        <div class="stat-card"><div class="num" aria-label="Infinite stories to tell">&#8734;</div><div class="label">Stories to tell</div></div>
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- Gallery -->
+    <section class="photo-section">
+      <h2>Gallery</h2>
+      <div class="gallery">
+        <div class="photo-slot"><span class="photo-label">Cityscape</span></div>
+        <div class="photo-slot"><span class="photo-label">Nature</span></div>
+        <div class="photo-slot"><span class="photo-label">Portrait</span></div>
+        <div class="photo-slot"><span class="photo-label">Golden Hour</span></div>
+        <div class="photo-slot"><span class="photo-label">Architecture</span></div>
+        <div class="photo-slot"><span class="photo-label">Street</span></div>
+        <div class="photo-slot"><span class="photo-label">Night Sky</span></div>
+        <div class="photo-slot"><span class="photo-label">Landscape</span></div>
+        <div class="photo-slot"><span class="photo-label">Abstract</span></div>
+      </div>
+    </section>
+
+  </div>
+  <!-- /photo-view -->
+
   <footer>&copy; <span id="yr"></span> Janis Ringli</footer>
-  <script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+
+  <script>
+    // ── Year ──────────────────────────────────────────────────────────
+    document.getElementById("yr").textContent = new Date().getFullYear();
+
+    // ── Toggle logic ──────────────────────────────────────────────────
+    const toggle    = document.getElementById("mode-switch");
+    const devView   = document.getElementById("dev-view");
+    const photoView = document.getElementById("photo-view");
+    const labelDev  = document.getElementById("label-dev");
+    const labelPhoto= document.getElementById("label-photo");
+
+    function applyMode(photoMode) {
+      if (photoMode) {
+        devView.classList.add("hidden");
+        photoView.classList.remove("hidden");
+        labelDev.classList.remove("active");
+        labelPhoto.classList.add("active");
+        document.title = "Janis Ringli \u2014 Photographer";
+      } else {
+        photoView.classList.add("hidden");
+        devView.classList.remove("hidden");
+        labelDev.classList.add("active");
+        labelPhoto.classList.remove("active");
+        document.title = "Janis Ringli \u2014 Developer";
+      }
+      // Persist preference
+      localStorage.setItem("mode", photoMode ? "photo" : "dev");
+      // Scroll to top on switch
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    toggle.addEventListener("change", () => applyMode(toggle.checked));
+
+    // Restore saved preference
+    const saved = localStorage.getItem("mode");
+    if (saved === "photo") {
+      toggle.checked = true;
+      applyMode(true);
+    }
+  </script>
+
 </body>
 </html>
