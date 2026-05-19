@@ -268,78 +268,222 @@
       border-radius: 999px;
     }
 
-    /* ─── Photo gallery ───────────────────────────────────────────────── */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 0.75rem;
-    }
-
-    .photo-slot {
-      aspect-ratio: 4/3;
-      background: var(--surface);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
+    /* ─── Photographer mode redesign ──────────────────────────────────── */
+    #photo-view {
       position: relative;
-      transition: transform 0.2s, border-color 0.2s;
+      isolation: isolate;
     }
 
-    .photo-slot:hover {
-      transform: scale(1.02);
-      border-color: var(--accent-alt);
+    #photo-view::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(245,158,11,0.18), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 38%),
+        radial-gradient(circle at 60% 80%, rgba(245,158,11,0.1), transparent 45%);
+      pointer-events: none;
+      z-index: -1;
     }
 
-    /* Gradient placeholder art */
-    .photo-slot:nth-child(1)  { background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); }
-    .photo-slot:nth-child(2)  { background: linear-gradient(135deg,#2d1b69,#11998e,#38ef7d); }
-    .photo-slot:nth-child(3)  { background: linear-gradient(135deg,#fc4a1a,#f7b733); }
-    .photo-slot:nth-child(4)  { background: linear-gradient(135deg,#0f2027,#203a43,#2c5364); }
-    .photo-slot:nth-child(5)  { background: linear-gradient(135deg,#373b44,#4286f4); }
-    .photo-slot:nth-child(6)  { background: linear-gradient(135deg,#c94b4b,#4b134f); }
-    .photo-slot:nth-child(7)  { background: linear-gradient(135deg,#1e3c72,#2a5298); }
-    .photo-slot:nth-child(8)  { background: linear-gradient(135deg,#134e5e,#71b280); }
-    .photo-slot:nth-child(9)  { background: linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b); }
+    .hero-photo {
+      max-width: 1100px;
+      text-align: left;
+      padding-top: 3.8rem;
+    }
 
-    .photo-slot .photo-label {
+    .photo-hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 1.4rem;
+      align-items: stretch;
+      margin-top: 2rem;
+    }
+
+    .photo-feature,
+    .photo-mini {
+      position: relative;
+      overflow: hidden;
+      border-radius: calc(var(--radius) + 6px);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.35);
+      transform: translateZ(0);
+    }
+
+    .photo-feature img,
+    .photo-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .photo-feature:hover img,
+    .photo-mini:hover img { transform: scale(1.05); }
+
+    .photo-feature::after,
+    .photo-mini::after {
+      content: "";
       position: absolute;
-      bottom: 0.5rem;
-      left: 0.5rem;
-      right: 0.5rem;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.7);
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(4px);
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.12) 52%, rgba(0,0,0,0.04));
     }
 
-    /* ─── Stats row (photographer) ────────────────────────────────────── */
+    .photo-feature {
+      min-height: 420px;
+    }
+
+    .photo-mini-wrap {
+      display: grid;
+      gap: 1.4rem;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .photo-mini {
+      min-height: 200px;
+    }
+
+    .photo-caption {
+      position: absolute;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 0.6rem;
+    }
+
+    .photo-caption strong {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .photo-caption span {
+      font-size: 0.75rem;
+      color: #e2e2e2;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .photo-section {
+      max-width: 1100px;
+    }
+
     .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 0.25rem;
     }
 
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.2rem;
-      text-align: center;
+      background: linear-gradient(155deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: calc(var(--radius) + 4px);
+      padding: 1.1rem 1rem;
+      backdrop-filter: blur(8px);
+      text-align: left;
     }
 
     .stat-card .num {
-      font-size: 2rem;
+      font-size: 2.05rem;
       font-weight: 800;
       color: var(--accent-alt);
+      letter-spacing: -0.02em;
     }
 
     .stat-card .label {
+      font-size: 0.84rem;
+      color: #d0d0d0;
+      margin-top: 0.2rem;
+    }
+
+    .collections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .collection-card {
+      position: relative;
+      border-radius: calc(var(--radius) + 4px);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.14);
+      min-height: 300px;
+      box-shadow: 0 16px 44px rgba(0,0,0,0.25);
+    }
+
+    .collection-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .collection-card:hover img { transform: scale(1.07); }
+
+    .collection-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.68), rgba(0,0,0,0.08));
+    }
+
+    .collection-meta {
+      position: absolute;
+      z-index: 2;
+      inset: auto 1rem 1rem;
+    }
+
+    .collection-meta h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.2rem;
+      line-height: 1.15;
+    }
+
+    .collection-meta p {
       font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 0.25rem;
+      color: #ddd;
+    }
+
+    .gallery {
+      column-count: 3;
+      column-gap: 0.9rem;
+    }
+
+    .gallery figure {
+      position: relative;
+      margin: 0 0 0.9rem;
+      break-inside: avoid;
+      overflow: hidden;
+      border-radius: calc(var(--radius) + 4px);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 14px 38px rgba(0,0,0,0.24);
+      background: #111;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery figure:hover img { transform: scale(1.04); }
+
+    .gallery figcaption {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 0.7rem 0.8rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.78), rgba(0,0,0,0));
+      font-size: 0.74rem;
+      color: #e6e6e6;
+      letter-spacing: 0.01em;
     }
 
     /* ─── Divider ─────────────────────────────────────────────────────── */
@@ -358,6 +502,27 @@
       header { padding: 0.75rem 1rem; }
       section { padding: 2rem 1rem; }
       .hero { padding: 3rem 1rem 2rem; }
+    }
+
+    @media (max-width: 900px) {
+      .hero-photo { text-align: center; }
+      .photo-hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .photo-caption {
+        align-items: center;
+      }
+      .gallery { column-count: 2; }
+    }
+
+    @media (max-width: 560px) {
+      .photo-feature { min-height: 280px; }
+      .photo-mini { min-height: 170px; }
+      .gallery { column-count: 1; }
+      .photo-caption {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -470,12 +635,37 @@
       <h1>Hi, I'm <span>Janis</span></h1>
       <p class="subtitle">Photographer &amp; Visual Storyteller</p>
       <p class="bio">
-        I capture moments, landscapes, and stories through my lens.
-        Every frame is an invitation to see the world a little differently.
+        I chase light, texture, and emotion — creating visuals that feel cinematic,
+        intimate, and alive. Explore curated moments from my visual world.
       </p>
       <div class="btn-row">
-        <a class="btn btn-amber" href="mailto:hello@janisringli.com">Book a session</a>
-        <a class="btn btn-secondary" href="https://instagram.com/janisringli" target="_blank" rel="noopener">Instagram</a>
+        <a class="btn btn-amber" href="https://unsplash.com/@janisringli" target="_blank" rel="noopener">View on Unsplash</a>
+        <a class="btn btn-secondary" href="mailto:hello@janisringli.com">Book a session</a>
+      </div>
+      <div class="photo-hero-grid">
+        <article class="photo-feature">
+          <img src="https://source.unsplash.com/1400x1000/?alps,mountains,nature&sig=101" alt="Feature photo of dramatic mountain landscape in golden light" loading="lazy" />
+          <div class="photo-caption">
+            <strong>Light over the peaks</strong>
+            <span>Editorial • Outdoors</span>
+          </div>
+        </article>
+        <div class="photo-mini-wrap">
+          <article class="photo-mini">
+            <img src="https://source.unsplash.com/1000x800/?street,night,city&sig=102" alt="Atmospheric night city scene with cinematic lighting" loading="lazy" />
+            <div class="photo-caption">
+              <strong>City after dark</strong>
+              <span>Street</span>
+            </div>
+          </article>
+          <article class="photo-mini">
+            <img src="https://source.unsplash.com/1000x800/?portrait,moody,cinematic&sig=103" alt="Expressive portrait with cinematic mood" loading="lazy" />
+            <div class="photo-caption">
+              <strong>Human stories</strong>
+              <span>Portrait</span>
+            </div>
+          </article>
+        </div>
       </div>
     </div>
 
@@ -485,9 +675,39 @@
     <section class="photo-section">
       <h2>By the numbers</h2>
       <div class="stats">
-        <div class="stat-card"><div class="num">3+</div><div class="label">Years shooting</div></div>
-        <div class="stat-card"><div class="num">500+</div><div class="label">Photos taken</div></div>
-        <div class="stat-card"><div class="num" aria-label="Infinite stories to tell">&#8734;</div><div class="label">Stories to tell</div></div>
+        <div class="stat-card"><div class="num">5+</div><div class="label">Years behind the lens</div></div>
+        <div class="stat-card"><div class="num">1k+</div><div class="label">Curated frames delivered</div></div>
+        <div class="stat-card"><div class="num">40+</div><div class="label">Locations explored</div></div>
+        <div class="stat-card"><div class="num" aria-label="Infinite stories to tell">&#8734;</div><div class="label">Moments waiting to be captured</div></div>
+      </div>
+    </section>
+
+    <hr />
+
+    <section class="photo-section">
+      <h2>Signature collections</h2>
+      <div class="collections">
+        <article class="collection-card">
+          <img src="https://source.unsplash.com/900x1200/?landscape,switzerland,alps&sig=111" alt="Mountain landscape from a signature collection" loading="lazy" />
+          <div class="collection-meta">
+            <h3>Alpine Reverie</h3>
+            <p>Grand landscapes shaped by changing mountain light.</p>
+          </div>
+        </article>
+        <article class="collection-card">
+          <img src="https://source.unsplash.com/900x1200/?urban,street,architecture&sig=112" alt="Urban architecture and street moments from a signature collection" loading="lazy" />
+          <div class="collection-meta">
+            <h3>Urban Pulse</h3>
+            <p>Geometry, movement, and atmosphere in the city.</p>
+          </div>
+        </article>
+        <article class="collection-card">
+          <img src="https://source.unsplash.com/900x1200/?portrait,emotion,studio&sig=113" alt="Portrait photography from a signature collection" loading="lazy" />
+          <div class="collection-meta">
+            <h3>Portrait Narratives</h3>
+            <p>Cinematic portraits focused on mood and presence.</p>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -495,17 +715,44 @@
 
     <!-- Gallery -->
     <section class="photo-section">
-      <h2>Gallery</h2>
+      <h2>Gallery wall</h2>
       <div class="gallery">
-        <div class="photo-slot"><span class="photo-label">Cityscape</span></div>
-        <div class="photo-slot"><span class="photo-label">Nature</span></div>
-        <div class="photo-slot"><span class="photo-label">Portrait</span></div>
-        <div class="photo-slot"><span class="photo-label">Golden Hour</span></div>
-        <div class="photo-slot"><span class="photo-label">Architecture</span></div>
-        <div class="photo-slot"><span class="photo-label">Street</span></div>
-        <div class="photo-slot"><span class="photo-label">Night Sky</span></div>
-        <div class="photo-slot"><span class="photo-label">Landscape</span></div>
-        <div class="photo-slot"><span class="photo-label">Abstract</span></div>
+        <figure>
+          <img src="https://source.unsplash.com/900x1200/?forest,mist,moody&sig=201" alt="Misty forest captured in atmospheric light" loading="lazy" />
+          <figcaption>Misty silence</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1300/?lake,mountains,reflection&sig=202" alt="Mountain lake with mirror-like reflections" loading="lazy" />
+          <figcaption>Mirror water</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1100/?street,portrait,city&sig=203" alt="Street portrait with cinematic city backdrop" loading="lazy" />
+          <figcaption>Between moments</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1200/?architecture,minimal,lines&sig=204" alt="Minimal architecture with bold lines and symmetry" loading="lazy" />
+          <figcaption>Urban symmetry</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1400/?sunset,landscape,goldenhour&sig=205" alt="Golden sunset over rolling landscape" loading="lazy" />
+          <figcaption>Last light</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1150/?night,city,neon&sig=206" alt="Neon-lit city at night" loading="lazy" />
+          <figcaption>Nocturne</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1250/?ocean,waves,dramatic&sig=207" alt="Dramatic ocean waves in dynamic motion" loading="lazy" />
+          <figcaption>Sea rhythm</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1200/?desert,texture,shadows&sig=208" alt="Desert textures with long shadows" loading="lazy" />
+          <figcaption>Sand and shadow</figcaption>
+        </figure>
+        <figure>
+          <img src="https://source.unsplash.com/900x1300/?travel,road,mountains&sig=209" alt="Road journey through mountain scenery" loading="lazy" />
+          <figcaption>Open horizon</figcaption>
+        </figure>
       </div>
     </section>
 
